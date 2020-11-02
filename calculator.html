@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html>
+    <style>
+        body{
+            background-color: rgb(5, 6, 12);
+        }
+
+        #container{
+            box-sizing: border-box;
+            border-radius: 10px;
+            background-color: rgb(23, 25, 43);
+            height:500px;
+            width: 400px;
+            margin: 200px auto;
+            
+        }
+        #btncontainer{
+            display: grid;
+            margin: auto;
+            grid-column-gap: 5px;
+            grid-row-gap: 5px;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            margin: 10px;
+            grid-template-rows: auto;
+            grid-template-areas: "clear clear delete divide"
+            "seven eight nine multiply"
+            "four five six substract"
+            "one two three sum"
+            "zero zero dot equal";
+        }
+        #displayborder{
+            box-sizing: border-box;
+            border-radius: 10px;
+            display:flex;
+            width: 100%;
+            height:15%;
+            background-color: rgb(23, 25, 43);
+            justify-content: center;
+            margin-bottom: 20px;
+
+        }
+        #display{
+            box-sizing: border-box;
+            border-radius: 4px;
+            margin-top: 10px;
+            width: 90%;
+            height:85%;
+            background-color: black;
+            color: white;
+            text-align: right;
+            font-size: 40px;
+        }
+        .calcbutton{
+            
+            box-sizing: border-box;
+            border-radius: 7px;
+            padding: 12px;
+            padding-top: 16px;
+            margin: 2px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(151, 148, 148);
+            
+            
+            font-size:30px
+            
+        }
+
+        #btnclear{
+            grid-area: clear;
+            background-color: red;
+            
+        }
+
+        #btndelete{
+            grid-area: delete;
+            background-color: yellow;
+        }
+
+        #btndivide{
+            grid-area: divide;
+        }
+
+        #btnmultiply{
+            grid-area: multiply;
+        }
+
+        #btnsubstract{
+            grid-area: substract;
+        }
+
+        #btnsum{
+            grid-area: sum;
+        }
+
+        #btndot{
+            grid-area: dot;
+        }
+
+        #btnequal{
+            grid-area: equal;
+            background-color: green;
+        }
+
+        #btn0{
+            grid-area: zero;
+        }
+        #btn1{
+            grid-area: one;
+        }
+        #btn2{
+            grid-area: two;
+        }
+        #btn3{
+            grid-area: three;
+        }
+        #btn4{
+            grid-area: four;
+        }
+        #btn5{
+            grid-area: five;
+        }
+        #btn6{
+            grid-area: six;
+        }
+        #btn7{
+            grid-area: seven;
+        }
+        #btn8{
+            grid-area: eight;
+        }
+        #btn9{
+            grid-area: nine;
+        }
+
+    </style>
+
+
+    <body>
+        <div id = 'container'>
+            <div id='displayborder'>
+                <div id='display'></div>
+            </div>
+            <div id = 'btncontainer'>   
+                <div id='btnclear' class='calcbutton'>Clear All</div>  
+                <div id='btndelete' class='calcbutton'>Delete</div>
+                <div id='btndivide' class='calcbutton'>/</div>
+                <div id='btnsubstract' class='calcbutton'>-</div>
+                <div id='btnsum' class='calcbutton'>+</div>
+                <div id='btndot' class='calcbutton'>.</div>
+                <div id='btnequal' class='calcbutton'>=</div>
+                <div id='btnmultiply' class='calcbutton'>*</div>
+                <div id='btn0' class='calcbutton'>0</div>      
+                <div id='btn1' class='calcbutton'>1</div>
+                <div id='btn2' class='calcbutton'>2</div>
+                <div id='btn3' class='calcbutton'>3</div>
+                <div id='btn4' class='calcbutton'>4</div>
+                <div id='btn5' class='calcbutton'>5</div>
+                <div id='btn6' class='calcbutton'>6</div>
+                <div id='btn7' class='calcbutton'>7</div>
+                <div id='btn8' class='calcbutton'>8</div>
+                <div id='btn9' class='calcbutton'>9</div>
+            </div>
+        </div>
+
+        
+    </body>
+
+    <script>
+        let digit = '';
+        let result = 0;
+        let first_operation = true;
+        let multiply = false;
+        let divide = false;
+        let sum = true;
+        let substract = false;
+        let divided_by_zero = false;
+        let dot_in_digit = false;
+        let displayCapacity = 18;
+
+        //Zrobic zeby po kliknieciu cyfry po '=' bez wybierania zadnego operatora wynik sie zerowal
+        //ogarnac zeby przyciski byly tej samej wielkosci
+        //dodac animacje do przyciskow
+
+        function addButtonFunctionality()
+        {
+            const display = document.querySelector('#display');
+            const equalbtn = document.querySelector('#btnequal');
+           
+            for(let i=0; i<=9; i++)
+            {
+                const btn = document.querySelector('#btn' + i); //btn0,btn1,btn2...dla kolejnych wywolan petli
+                
+                btn.addEventListener('click', ()=>{
+                    if(digit.length == displayCapacity)
+                    {
+                        display.textContent = "ERROR";
+                        toDefault();
+                    }
+                    else{
+                        digit = digit + i.toString(); 
+                        display.textContent = digit;
+                    }
+                });
+
+            }    
+
+            equalbtn.addEventListener('click', () =>{
+                    operate();
+
+                    //jesli operacja przebiegnie bez problemow, to flagi pozostana ustawione na 'false' aby mozna bylo wykonywac dalsze dzialania na obecnym wyniku
+                    divide = false;
+                    sum = false;
+                    substract = false;
+                    multiply = false;
+                    /////////////////
+                    if(divided_by_zero == true){
+                        display.textContent = "Please stop";
+                        toDefault();
+                    }
+                    else{
+                        display.textContent = result;
+                    }
+    
+
+
+                    if(result.toString().length > displayCapacity) 
+                    {
+                        display.textContent = "ERROR";
+                        toDefault();
+                    }
+
+                })
+            
+            const multiplybtn = document.querySelector('#btnmultiply')
+            multiplybtn.addEventListener('click',  ()=>{
+                operate();
+            })
+
+            const dividedbtn = document.querySelector('#btndivide')
+            dividedbtn.addEventListener('click',  ()=>{
+                operate();
+            })
+
+            const sumbtn = document.querySelector('#btnsum')
+            sumbtn.addEventListener('click',  ()=>{
+                operate();
+            })
+
+            const substractbtn = document.querySelector('#btnsubstract')
+            substractbtn.addEventListener('click',  ()=>{
+                operate();
+            })
+
+
+            const clearbtn = document.querySelector('#btnclear');
+            clearbtn.addEventListener('click', () =>{
+                toDefault();
+                display.textContent = '';
+            })
+
+            const deletebtn = document.querySelector('#btndelete');
+            deletebtn.addEventListener('click', () => {
+                digit = '';
+                display.textContent = '';
+            })
+
+            const dotbtn = document.querySelector('#btndot');
+            dotbtn.addEventListener('click', () => {
+                if(dot_in_digit == false){
+                    digit = digit + '.'; 
+                    display.textContent = digit;
+                    dot_in_digit = true;
+                }
+            })
+            
+        }
+        function operate(){
+                var target = event.target || event.srcElement;
+                var chosenOperation = target.id;
+
+                if(digit!='' )
+                {
+                    if(multiply==true){
+                        result = Math.round((result * parseFloat(digit)) * 100) / 100; //zaokraglenie do dwoch miejsc po przecinku
+                    }
+                    else if(divide==true){
+                        if(Math.round(parseFloat(digit) * 100) / 100 == 0)
+                        {
+                            toDefault();
+                            divided_by_zero = true; 
+                        }
+                        else
+                            result = Math.round((result / parseFloat(digit)) * 100) / 100;
+                    }
+                    else if(sum==true){
+                        result = Math.round((result + parseFloat(digit)) * 100) / 100;
+                    }
+                    else if(substract==true){
+                        result = Math.round((result - parseFloat(digit)) * 100) / 100;
+                    }
+                }
+                digit = '';
+                divide = false;
+                sum = false;
+                substract = false;
+                multiply = false;
+                dot_in_digit = false
+
+                switch(chosenOperation){
+                    case 'btnmultiply':
+                        multiply = true;
+                        break;
+                    case 'btndivide':
+                        divide = true;
+                        break;
+                    case 'btnsum':
+                        sum = true;
+                        break;
+                    case 'btnsubstract':
+                        substract = true;
+                        break;
+                }
+
+        }
+        function toDefault(){
+            result = 0;
+            digit = '';
+            divide = false;
+            sum = true;
+            substract = false;
+            multiply = false;
+            divided_by_zero = false;
+            dot_in_digit = false;
+        }
+
+        addButtonFunctionality();
+    </script>
+</html>
