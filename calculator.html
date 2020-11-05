@@ -180,10 +180,6 @@
         let dot_in_digit = false;
         let displayCapacity = 18;
 
-        //Zrobic zeby po kliknieciu cyfry po '=' bez wybierania zadnego operatora wynik sie zerowal
-        //ogarnac zeby przyciski byly tej samej wielkosci
-        //dodac animacje do przyciskow
-
         function addButtonFunctionality()
         {
             const display = document.querySelector('#display');
@@ -210,7 +206,6 @@
             equalbtn.addEventListener('click', () =>{
                     operate();
 
-                    //jesli operacja przebiegnie bez problemow, to flagi pozostana ustawione na 'false' aby mozna bylo wykonywac dalsze dzialania na obecnym wyniku
                     divide = false;
                     sum = false;
                     substract = false;
